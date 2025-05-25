@@ -24,7 +24,7 @@ Seu objetivo é proteger o Goku: impeça que ele seja atingido!
 O jogo termina quando Goku for atingido!
 
 
-#### 🧱 Tecnologias utilizadas:
+### 🧱 Tecnologias utilizadas:
 
 🐍 Python 3
 

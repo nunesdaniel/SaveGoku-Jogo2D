@@ -6,6 +6,7 @@ from tkinter import messagebox
 from recursos.functions.functions import inicializarBancoDeDados
 from recursos.functions.functions import escreverDados
 import json
+import pyttsx3
 
 if os.name == "posix":
     root = tk.Tk()
@@ -13,6 +14,7 @@ if os.name == "posix":
     root.destroy()
 
 pygame.init()
+tts = pyttsx3.init()
 inicializarBancoDeDados()
 tamanho = (1000,700)
 relogio = pygame.time.Clock()
@@ -44,6 +46,9 @@ def jogar():
         else:
             #print(f'Nome digitado: {nome}')  # Exibe o nome no console
             root.destroy()  # Fecha a janela após a entrada válida
+            # Falar o nome e desejar boa-sorte!
+            tts.say(f"Boa sorte {nome}!")
+            tts.runAndWait()
 
     # Criação da janela principal
     root = tk.Tk()
@@ -67,8 +72,7 @@ def jogar():
     # Inicia o loop da interface gráfica
     root.mainloop()
     
-
-    posicaoXPersona = 400
+    posicaoXPersona = 426
     posicaoYPersona = 300
     movimentoXPersona  = 0
     movimentoYPersona  = 0
@@ -82,7 +86,7 @@ def jogar():
     alturaPersona = 265
     larguraVegetaCollision  = 200
     alturaVegetaCollision  = 185
-    dificuldade  = 30
+    dificuldade  = 10
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -108,14 +112,14 @@ def jogar():
         posicaoYPersona = posicaoYPersona + movimentoYPersona            
         
         if posicaoXPersona < 0 :
-            posicaoXPersona = 15
-        elif posicaoXPersona >550:
-            posicaoXPersona = 540
+            posicaoXPersona = 0
+        elif posicaoXPersona >853:
+            posicaoXPersona = 853
             
         if posicaoYPersona < 0 :
-            posicaoYPersona = 15
-        elif posicaoYPersona > 473:
-            posicaoYPersona = 463
+            posicaoYPersona = 0
+        elif posicaoYPersona > 435:
+            posicaoYPersona = 435
         
             
         tela.fill(branco)
@@ -124,11 +128,11 @@ def jogar():
         tela.blit( goku, (posicaoXPersona, posicaoYPersona) )
         
         posicaoYMissel = posicaoYMissel + velocidadeMissel
-        if posicaoYMissel > 600:
-            posicaoYMissel = -240
+        if posicaoYMissel > 700:
+            posicaoYMissel = -185
             pontos = pontos + 1
             velocidadeMissel = velocidadeMissel + 1
-            posicaoXMissel = random.randint(0,800)
+            posicaoXMissel = random.randint(0,1000)
             pygame.mixer.Sound.play(missileSound)
             
             
