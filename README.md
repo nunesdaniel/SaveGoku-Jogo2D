@@ -15,9 +15,9 @@ O tempo é curto. O destino de Goku está em suas mãos!
 
 ### 🎮 Como jogar
 
-Mova-se pela tela utilizando as SETAS do teclado ou as teclas W, A, S, D.
+Mova-se pela tela utilizando as SETAS laterarias para esquerda ou direita do teclado ou as teclas A, e D.
 
-Para pausar o jogo, pressione a tecla ESC.
+Para pausar o jogo, pressione a tecla ESPAÇO.
 
 Seu objetivo é proteger o Goku: impeça que ele seja atingido!
 

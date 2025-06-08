@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import messagebox
 from recursos.functions.functions import inicializarBancoDeDados
 from recursos.functions.functions import escreverDados
+from recursos.functions.pause import pause
 import json
 import pyttsx3
 
@@ -24,11 +25,14 @@ icone  = pygame.image.load("recursos/icons/icon.png")
 pygame.display.set_icon(icone)
 branco = (255,255,255)
 preto = (0, 0 ,0 )
-goku = pygame.image.load("recursos/images/goku.png")
+sol = (255, 245, 225)
+goku = pygame.image.load("recursos/images/goku.png").convert_alpha()
+mascara_goku = pygame.mask.from_surface(goku)
 fundoStart = pygame.image.load("recursos/images/menu.jpg")
 fundoJogo = pygame.image.load("recursos/images/background.jpg")
 fundoDead = pygame.image.load("recursos/images/lost.jpg")
-missel = pygame.image.load("recursos/images/vegeta-collision.png")
+missel = pygame.image.load("recursos/images/vegeta-collision.png").convert_alpha()
+mascara_missel = pygame.mask.from_surface(missel)
 missileSound = pygame.mixer.Sound("recursos/sounds/missile.wav")
 explosaoSound = pygame.mixer.Sound("recursos/sounds/explosion.wav")
 fonteMenu = pygame.font.SysFont("comicsans",18)
@@ -73,7 +77,7 @@ def jogar():
     root.mainloop()
     
     posicaoXPersona = 426
-    posicaoYPersona = 300
+    posicaoYPersona = 367
     movimentoXPersona  = 0
     movimentoYPersona  = 0
     posicaoXMissel = 400
@@ -82,11 +86,11 @@ def jogar():
     pygame.mixer.Sound.play(missileSound)
     pygame.mixer.music.play(-1)
     pontos = 0
-    larguraPersona = 147
-    alturaPersona = 265
-    larguraVegetaCollision  = 200
-    alturaVegetaCollision  = 185
-    dificuldade  = 10
+    #larguraPersona = 147
+    #alturaPersona = 265
+    #larguraVegetaCollision  = 200
+    #alturaVegetaCollision  = 185
+    #dificuldade = 0
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -107,6 +111,8 @@ def jogar():
                 movimentoYPersona = 0
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_DOWN:
                 movimentoYPersona = 0
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+                pause(tela, fonteMorte, tamanho)
                 
         posicaoXPersona = posicaoXPersona + movimentoXPersona            
         posicaoYPersona = posicaoYPersona + movimentoYPersona            
@@ -124,7 +130,8 @@ def jogar():
             
         tela.fill(branco)
         tela.blit(fundoJogo, (0,0) )
-        #pygame.draw.circle(tela, preto, (posicaoXPersona,posicaoYPersona), 40, 0 )
+
+        #pygame.draw.circle(tela, (255, 165, 0), (200,40), tamanhoSol, tamanhoCircle )
         tela.blit( goku, (posicaoXPersona, posicaoYPersona) )
         
         posicaoYMissel = posicaoYMissel + velocidadeMissel
@@ -141,23 +148,49 @@ def jogar():
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
         tela.blit(texto, (15,15))
         
-        pixelsPersonaX = list(range(posicaoXPersona, posicaoXPersona+larguraPersona))
-        pixelsPersonaY = list(range(posicaoYPersona, posicaoYPersona+alturaPersona))
-        pixelsMisselX = list(range(posicaoXMissel, posicaoXMissel + larguraVegetaCollision))
-        pixelsMisselY = list(range(posicaoYMissel, posicaoYMissel + alturaVegetaCollision))
-        
-        os.system("cls")
-        # print( len( list( set(pixelsMisselX).intersection(set(pixelsPersonaX))   ) )   )
-        if  len( list( set(pixelsMisselY).intersection(set(pixelsPersonaY))) ) > dificuldade:
-            if len( list( set(pixelsMisselX).intersection(set(pixelsPersonaX))   ) )  > dificuldade:
-                escreverDados(nome, pontos)
-                dead()
-                
-            else:
-                print("Ainda Vivo, mas por pouco!")
+#        pixelsPersonaX = list(range(posicaoXPersona, posicaoXPersona+larguraPersona))
+#        pixelsPersonaY = list(range(posicaoYPersona, posicaoYPersona+alturaPersona))
+#        pixelsMisselX = list(range(posicaoXMissel, posicaoXMissel + larguraVegetaCollision))
+#        pixelsMisselY = list(range(posicaoYMissel, posicaoYMissel + alturaVegetaCollision))
+#        
+#        os.system("cls")
+#        # print( len( list( set(pixelsMisselX).intersection(set(pixelsPersonaX))   ) )   )
+#        if  len( list( set(pixelsMisselY).intersection(set(pixelsPersonaY))) ) > dificuldade:
+#            if len( list( set(pixelsMisselX).intersection(set(pixelsPersonaX))   ) )  > dificuldade:
+#                escreverDados(nome, pontos)
+#                dead()
+#                
+#            else:
+#                print("Ainda Vivo, mas por pouco!")
+#        else:
+#            print("Ainda Vivo")
+
+        # Calcula o deslocamento (offset) entre a posição do míssil e a posição do personagem (Goku)
+        # Isso é necessário porque a função de colisão .overlap() precisa saber onde a segunda máscara (do míssil)
+        # está posicionada em relação à primeira máscara (do personagem).
+        offset = (
+            int(posicaoXMissel - posicaoXPersona),  # Diferença horizontal entre o míssil e o personagem
+            int(posicaoYMissel - posicaoYPersona)   # Diferença vertical entre o míssil e o personagem
+        )
+
+        # Verifica se houve colisão pixel a pixel entre as duas máscaras
+        # A função .overlap() retorna a posição da colisão (x, y) se houver colisão entre pixels sólidos (não transparentes)
+        # Caso contrário, retorna None.
+        # Aqui, a máscara do personagem é usada como base, e a máscara do míssil é verificada na posição relativa (offset).
+        colidiu = mascara_goku.overlap(mascara_missel, offset)
+
+
+        # Se colidiu for diferente de None, houve colisão
+        if colidiu:
+            print("Morreu")  # Houve colisão entre os pixels sólidos
         else:
-            print("Ainda Vivo")
-        
+            print("Vivo")    # Não houve colisão, personagem ainda está ileso
+
+        if colidiu:
+            escreverDados(nome, pontos)
+            dead()
+            
+
         pygame.display.update()
         relogio.tick(60)
 
