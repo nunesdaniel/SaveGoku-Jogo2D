@@ -103,14 +103,14 @@ def jogar():
                 movimentoXPersona = 0
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_LEFT:
                 movimentoXPersona = 0
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
-                movimentoYPersona = -15
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_DOWN:
-                movimentoYPersona = 15
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_UP:
-                movimentoYPersona = 0
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_DOWN:
-                movimentoYPersona = 0
+            #elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
+            #    movimentoYPersona = -15
+            #elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_DOWN:
+            #    movimentoYPersona = 15
+            #elif evento.type == pygame.KEYUP and evento.key == pygame.K_UP:
+            #    movimentoYPersona = 0
+            #elif evento.type == pygame.KEYUP and evento.key == pygame.K_DOWN:
+            #    movimentoYPersona = 0
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
                 pause(tela, fonteMorte, tamanho)
                 
