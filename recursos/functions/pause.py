@@ -7,12 +7,12 @@ def pause(tela, fonte_titulo, tamanho_tela):
     texto_pause = fonte_titulo.render("PAUSE", True, (255, 0, 0))
     rect_pause = texto_pause.get_rect(center=(tamanho_tela[0] // 2, tamanho_tela[1] // 2 - 50))
 
-    # Texto instrução
+    # Pressione [ESPAÇO] para continuar
     fonte_instrucao = pygame.font.SysFont("comicsans", 32)
-    texto_instrucao = fonte_instrucao.render("Pressione [ESPAÇO] para continuar", True, (255, 255, 255))
+    texto_instrucao = fonte_instrucao.render("Pressione [ESPAÇO] para continuar...", True, (255, 255, 255))
     rect_instrucao = texto_instrucao.get_rect(center=(tamanho_tela[0] // 2, tamanho_tela[1] // 2 + 30))
 
-    # Fundo escuro
+    # Fundo preto
     overlay = pygame.Surface(tamanho_tela)
     overlay.set_alpha(180)
     overlay.fill((0, 0, 0))
