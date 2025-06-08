@@ -15,7 +15,7 @@ O tempo é curto. O destino de Goku está em suas mãos!
 
 ### 🎮 Como jogar
 
-Mova-se pela tela utilizando as SETAS laterarias para esquerda ou direita do teclado ou as teclas A, e D.
+Use as setas direcionais esquerda e direita ou as teclas A e D para mover o personagem lateralmente pela tela.
 
 Para pausar o jogo, pressione a tecla ESPAÇO.
 
