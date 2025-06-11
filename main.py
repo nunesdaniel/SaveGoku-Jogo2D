@@ -5,9 +5,12 @@ import tkinter as tk
 from tkinter import messagebox
 from recursos.functions.functions import inicializarBancoDeDados
 from recursos.functions.functions import escreverDados
+from recursos.functions.functions import reconhecimento_inicial
 from recursos.functions.pause import pause
 import json
 import pyttsx3
+from datetime import datetime
+
 
 if os.name == "posix":
     root = tk.Tk()
@@ -24,6 +27,7 @@ pygame.display.set_caption("Save Goku!")
 icone  = pygame.image.load("recursos/icons/icon.png")
 pygame.display.set_icon(icone)
 branco = (255,255,255)
+verde = (0, 255, 10)
 preto = (0, 0 ,0 )
 sol = (255, 245, 225)
 goku = pygame.image.load("recursos/images/goku.png").convert_alpha()
@@ -32,14 +36,56 @@ fundoStart = pygame.image.load("recursos/images/menu.jpg")
 fundoJogo = pygame.image.load("recursos/images/background.jpg")
 fundoDead = pygame.image.load("recursos/images/lost.jpg")
 missel = pygame.image.load("recursos/images/vegeta-collision.png").convert_alpha()
-mascara_missel = pygame.mask.from_surface(missel)
+missel = pygame.transform.scale(missel, (145, 125))
+mascara_vegeta = pygame.mask.from_surface(missel)
 missileSound = pygame.mixer.Sound("recursos/sounds/missile.wav")
 explosaoSound = pygame.mixer.Sound("recursos/sounds/explosion.wav")
 fonteMenu = pygame.font.SysFont("comicsans",18)
 fonteMorte = pygame.font.SysFont("arial",120)
 pygame.mixer.music.load("recursos/sounds/soundtrack.mp3")
+nuvem = pygame.image.load("recursos/images/nuvem.png").convert_alpha()
+nuvem = pygame.transform.scale(nuvem, (120, 60))  # Ajuste o tamanho se necessário
+sol = (255, 245, 225)
+amarelo = (255, 255, 0)
+
+
+def tela_boas_vindas(nome):
+    instrucoes = [
+        f"Bem-vindo, {nome}!",
+        "Use as setas direcionais < > ou as teclas A / D para se mover.",
+        "Pressione ESPAÇO para pausar o jogo.",
+        "Desvie das capsulas do Vegeta para proteger o Goku!",
+        "Pressione ENTER para começar."
+    ]
+
+    while True:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                quit()
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
+                return  # Começa o jogo
+
+        tela.fill(preto)
+
+        # Centraliza as instruções verticalmente
+        altura_total = len(instrucoes) * 30
+        y_inicial = (tela.get_height() - altura_total) // 2
+
+        for i, linha in enumerate(instrucoes):
+            texto = fonteMenu.render(linha, True, branco)
+            x = (tela.get_width() - texto.get_width()) // 2
+            y = y_inicial + i * 30
+            tela.blit(texto, (x, y))
+
+        pygame.display.update()
+        relogio.tick(60)
+
+
+
+
 
 def jogar():
+
     largura_janela = 300
     altura_janela = 50
     def obter_nome():
@@ -50,9 +96,6 @@ def jogar():
         else:
             #print(f'Nome digitado: {nome}')  # Exibe o nome no console
             root.destroy()  # Fecha a janela após a entrada válida
-            # Falar o nome e desejar boa-sorte!
-            tts.say(f"Boa sorte {nome}!")
-            tts.runAndWait()
 
     # Criação da janela principal
     root = tk.Tk()
@@ -73,9 +116,13 @@ def jogar():
     botao = tk.Button(root, text="Enviar", command=obter_nome)
     botao.pack()
 
+
     # Inicia o loop da interface gráfica
     root.mainloop()
-    
+    tela_boas_vindas(nome)
+    # Falar o nome e desejar boa-sorte!
+    tts.say(f"Boa sorte {nome}!")
+    tts.runAndWait()
     posicaoXPersona = 426
     posicaoYPersona = 367
     movimentoXPersona  = 0
@@ -91,6 +138,12 @@ def jogar():
     #larguraVegetaCollision  = 200
     #alturaVegetaCollision  = 185
     #dificuldade = 0
+
+    # Nuvem
+    posicaoXNuvem = random.randint(0, 1000)
+    posicaoYNuvem = random.randint(50, 150)
+    velocidadeNuvem = random.choice([0.5, 1, 1.5])
+
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -103,17 +156,16 @@ def jogar():
                 movimentoXPersona = 0
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_LEFT:
                 movimentoXPersona = 0
-            #elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
-            #    movimentoYPersona = -15
-            #elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_DOWN:
-            #    movimentoYPersona = 15
-            #elif evento.type == pygame.KEYUP and evento.key == pygame.K_UP:
-            #    movimentoYPersona = 0
-            #elif evento.type == pygame.KEYUP and evento.key == pygame.K_DOWN:
-            #    movimentoYPersona = 0
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_d:
+                movimentoXPersona = 15
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_a:
+                movimentoXPersona = -15
+            elif evento.type == pygame.KEYUP and evento.key == pygame.K_d:
+                movimentoXPersona = 0
+            elif evento.type == pygame.KEYUP and evento.key == pygame.K_a:
+                movimentoXPersona = 0
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
                 pause(tela, fonteMorte, tamanho)
-                
         posicaoXPersona = posicaoXPersona + movimentoXPersona            
         posicaoYPersona = posicaoYPersona + movimentoYPersona            
         
@@ -129,7 +181,8 @@ def jogar():
         
             
         tela.fill(branco)
-        tela.blit(fundoJogo, (0,0) )
+        tela.blit(fundoJogo, (0,0))                          # Fundo
+        pygame.draw.circle(tela, amarelo, (80, 80), 50)      # Sol
 
         #pygame.draw.circle(tela, (255, 165, 0), (200,40), tamanhoSol, tamanhoCircle )
         tela.blit( goku, (posicaoXPersona, posicaoYPersona) )
@@ -148,6 +201,9 @@ def jogar():
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
         tela.blit(texto, (15,15))
         
+        texto = fonteMenu.render("Press Space to Pause Game", True, verde)
+        tela.blit(texto, (15,45))
+
 #        pixelsPersonaX = list(range(posicaoXPersona, posicaoXPersona+larguraPersona))
 #        pixelsPersonaY = list(range(posicaoYPersona, posicaoYPersona+alturaPersona))
 #        pixelsMisselX = list(range(posicaoXMissel, posicaoXMissel + larguraVegetaCollision))
@@ -177,7 +233,7 @@ def jogar():
         # A função .overlap() retorna a posição da colisão (x, y) se houver colisão entre pixels sólidos (não transparentes)
         # Caso contrário, retorna None.
         # Aqui, a máscara do personagem é usada como base, e a máscara do míssil é verificada na posição relativa (offset).
-        colidiu = mascara_goku.overlap(mascara_missel, offset)
+        colidiu = mascara_goku.overlap(mascara_vegeta, offset)
 
 
         # Se colidiu for diferente de None, houve colisão
@@ -187,10 +243,19 @@ def jogar():
             print("Vivo")    # Não houve colisão, personagem ainda está ileso
 
         if colidiu:
+            horario = datetime.now().strftime("%H:%M:%S")
             escreverDados(nome, pontos)
             dead()
             
+        # Atualiza posição da nuvem
+        posicaoXNuvem -= velocidadeNuvem
+        if posicaoXNuvem < -120:
+            posicaoXNuvem = 1000
+            posicaoYNuvem = random.randint(50, 150)
+            velocidadeNuvem = random.choice([0.5, 1, 1.5])  # Nova velocidade aleatória
 
+        # Desenha a nuvem
+        tela.blit(nuvem, (posicaoXNuvem, posicaoYNuvem))
         pygame.display.update()
         relogio.tick(60)
 
@@ -254,25 +319,47 @@ def dead():
     alturaButtonQuit  = 40
     
     
-    root = tk.Tk()
-    root.title("Tela da Morte")
+    # Try para carregar e organizar os registros do log
+    try:
+        with open("./recursos/logs/log.dat", "r") as arquivo:
+            log_partidas = json.load(arquivo)
+    except:
+        log_partidas = {}
+
+    # Ordena e seleciona os 5 mais recentes
+    registros_ordenados = sorted(log_partidas.items(), key=lambda x: x[1][1], reverse=True)
+    ultimos_5_logs = registros_ordenados[:5]
+    #root = tk.Tk()
+    #root.title("Tela da Morte")
 
     # Adiciona um título na tela
-    label = tk.Label(root, text="Log das Partidas", font=("Arial", 16))
-    label.pack(pady=10)
+    #label = tk.Label(root, text="Log das Partidas", font=("Arial", 16))
+    #label.pack(pady=10)
 
-    # Criação do Listbox para mostrar o log
-    listbox = tk.Listbox(root, width=50, height=10, selectmode=tk.SINGLE)
-    listbox.pack(pady=20)
+    ## Criação do Listbox para mostrar o log
+    #listbox = tk.Listbox(root, width=50, height=10, selectmode=tk.SINGLE)
+    #listbox.pack(pady=20)
 
-    # Adiciona o log das partidas no Listbox
-    log_partidas = open("./recursos/logs/log.dat", "r").read()
-    log_partidas = json.loads(log_partidas)
-    for chave in log_partidas:
-        listbox.insert(tk.END, f"Pontos: {log_partidas[chave][0]} na data: {log_partidas[chave][1]} - Nickname: {chave}")  # Adiciona cada linha no Listbox
-    
-    root.mainloop()
+    ## Adiciona o log das partidas no Listbox
+    #log_partidas = open("./recursos/logs/log.dat", "r").read()
+    #log_partidas = json.loads(log_partidas)
+    #for chave in log_partidas:
+    #    listbox.insert(tk.END, f"Pontos: {log_partidas[chave][0]} na data: {log_partidas[chave][1]} - Nickname: {chave}")  # Adiciona cada linha no Listbox
+    #
+    #root.mainloop()
     while True:
+        # Função do log para exibir os últimos 5 registros.
+        # Carrega os registros do log
+        try:
+            with open("./recursos/logs/log.dat", "r") as arquivo:
+                log_partidas = json.load(arquivo)
+        except:
+            log_partidas = {}
+
+        # Ordena os logs pela data (valor [1]) ou qualquer outro critério se quiser
+        registros_ordenados = sorted(log_partidas.items(), key=lambda x: x[1][1], reverse=True)
+        ultimos_5_logs = registros_ordenados[:5]  # Pega os 5 últimos registros
+
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 quit()
@@ -304,7 +391,17 @@ def dead():
         tela.fill(branco)
         tela.blit(fundoDead, (0,0) )
 
-        
+        # Título dos registros
+        titulo = fonteMenu.render("Ranking das 5 Melhores Pontuações:", True, branco)
+        tela.blit(titulo, (690, 20))
+
+        # Exibe os últimos 5 registros
+        for i, (nick, dados) in enumerate(ultimos_5_logs):
+            texto = f"{i+1}. {nick} - Pontos: {dados[0]} - Data: {dados[1]}"
+            linha = fonteMenu.render(texto, True, branco)
+            tela.blit(linha, (535, 50 + i * 30))  # Linha inicial + espaçamento
+
+
         startButton = pygame.draw.rect(tela, branco, (10,10, larguraButtonStart, alturaButtonStart), border_radius=15)
         startTexto = fonteMenu.render("Iniciar Game", True, preto)
         tela.blit(startTexto, (25,12))
@@ -313,10 +410,7 @@ def dead():
         quitTexto = fonteMenu.render("Sair do Game", True, preto)
         tela.blit(quitTexto, (25,62))
 
-
         pygame.display.update()
         relogio.tick(60)
-
-
+reconhecimento_inicial()
 start()
-
