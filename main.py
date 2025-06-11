@@ -35,9 +35,9 @@ mascara_goku = pygame.mask.from_surface(goku)
 fundoStart = pygame.image.load("recursos/images/menu.jpg")
 fundoJogo = pygame.image.load("recursos/images/background.jpg")
 fundoDead = pygame.image.load("recursos/images/lost.jpg")
-missel = pygame.image.load("recursos/images/vegeta-collision.png").convert_alpha()
-missel = pygame.transform.scale(missel, (145, 125))
-mascara_vegeta = pygame.mask.from_surface(missel)
+vegeta = pygame.image.load("recursos/images/vegeta-collision.png").convert_alpha()
+vegeta = pygame.transform.scale(vegeta, (145, 125))
+mascara_vegeta = pygame.mask.from_surface(vegeta)
 missileSound = pygame.mixer.Sound("recursos/sounds/missile.wav")
 explosaoSound = pygame.mixer.Sound("recursos/sounds/explosion.wav")
 fonteMenu = pygame.font.SysFont("comicsans",18)
@@ -127,9 +127,9 @@ def jogar():
     posicaoYPersona = 367
     movimentoXPersona  = 0
     movimentoYPersona  = 0
-    posicaoXMissel = 400
-    posicaoYMissel = -240
-    velocidadeMissel = 1
+    posicaoXVegeta = 400
+    posicaoYVegeta = -240
+    velocidadeVegeta = 1
     pygame.mixer.Sound.play(missileSound)
     pygame.mixer.music.play(-1)
     pontos = 0
@@ -187,16 +187,16 @@ def jogar():
         #pygame.draw.circle(tela, (255, 165, 0), (200,40), tamanhoSol, tamanhoCircle )
         tela.blit( goku, (posicaoXPersona, posicaoYPersona) )
         
-        posicaoYMissel = posicaoYMissel + velocidadeMissel
-        if posicaoYMissel > 700:
-            posicaoYMissel = -185
+        posicaoYVegeta = posicaoYVegeta + velocidadeVegeta
+        if posicaoYVegeta > 700:
+            posicaoYVegeta = -185
             pontos = pontos + 1
-            velocidadeMissel = velocidadeMissel + 1
-            posicaoXMissel = random.randint(0,1000)
+            velocidadeVegeta = velocidadeVegeta + 1
+            posicaoXVegeta = random.randint(0,1000)
             pygame.mixer.Sound.play(missileSound)
             
             
-        tela.blit( missel, (posicaoXMissel, posicaoYMissel) )
+        tela.blit( vegeta, (posicaoXVegeta, posicaoYVegeta) )
         
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
         tela.blit(texto, (15,15))
@@ -206,13 +206,13 @@ def jogar():
 
 #        pixelsPersonaX = list(range(posicaoXPersona, posicaoXPersona+larguraPersona))
 #        pixelsPersonaY = list(range(posicaoYPersona, posicaoYPersona+alturaPersona))
-#        pixelsMisselX = list(range(posicaoXMissel, posicaoXMissel + larguraVegetaCollision))
-#        pixelsMisselY = list(range(posicaoYMissel, posicaoYMissel + alturaVegetaCollision))
+#        pixelsVegetaX = list(range(posicaoXVegeta, posicaoXVegeta + larguraVegetaCollision))
+#        pixelsVegetaY = list(range(posicaoYVegeta, posicaoYVegeta + alturaVegetaCollision))
 #        
 #        os.system("cls")
-#        # print( len( list( set(pixelsMisselX).intersection(set(pixelsPersonaX))   ) )   )
-#        if  len( list( set(pixelsMisselY).intersection(set(pixelsPersonaY))) ) > dificuldade:
-#            if len( list( set(pixelsMisselX).intersection(set(pixelsPersonaX))   ) )  > dificuldade:
+#        # print( len( list( set(pixelsVegetaX).intersection(set(pixelsPersonaX))   ) )   )
+#        if  len( list( set(pixelsVegetaY).intersection(set(pixelsPersonaY))) ) > dificuldade:
+#            if len( list( set(pixelsVegetaX).intersection(set(pixelsPersonaX))   ) )  > dificuldade:
 #                escreverDados(nome, pontos)
 #                dead()
 #                
@@ -225,8 +225,8 @@ def jogar():
         # Isso é necessário porque a função de colisão .overlap() precisa saber onde a segunda máscara (do míssil)
         # está posicionada em relação à primeira máscara (do personagem).
         offset = (
-            int(posicaoXMissel - posicaoXPersona),  # Diferença horizontal entre o míssil e o personagem
-            int(posicaoYMissel - posicaoYPersona)   # Diferença vertical entre o míssil e o personagem
+            int(posicaoXVegeta - posicaoXPersona),  # Diferença horizontal entre o míssil e o personagem
+            int(posicaoYVegeta - posicaoYPersona)   # Diferença vertical entre o míssil e o personagem
         )
 
         # Verifica se houve colisão pixel a pixel entre as duas máscaras
