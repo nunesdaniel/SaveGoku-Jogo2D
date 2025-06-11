@@ -23,6 +23,9 @@ Seu objetivo é proteger o Goku: impeça que ele seja atingido!
 
 O jogo termina quando Goku for atingido!
 
+### 💾 Baixe o jogo
+
+👉 [Download SaveGoku.exe](https://github.com/nunesdaniel/SaveGoku-Jogo2D/releases/latest)
 
 ### 🧱 Tecnologias utilizadas:
 
