@@ -47,3 +47,6 @@ O jogo termina quando Goku for atingido!
 
 ### 🧠 Base do projeto / Mentoria
 - [@Professor Marcos Roberto dos Santos](https://www.github.com/profmarcossantos)
+
+### 🧑‍💻 Testador do Jogo:
+- [@Julian de Oliveira da Silva - RA: 1138696](https://www.github.com/oliveirajulian)
